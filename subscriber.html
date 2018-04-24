@@ -9,6 +9,7 @@
 
 </head>
 <body>
+
 	<!-- Some fun styling! -->
 	<style>
 		h1, h2 {
@@ -39,16 +40,9 @@
 
 	<script type="text/javascript">
 		// You will only be subscribing to a channel, so no need for a publish key
-		var me = PubNub.generateUUID();
-		console.log(me)
 		var pubnub = new PubNub({
-		    publishKey:   'pub-c-3fed0d90-bc45-4217-bba5-9b65d527e3bf',
-		    subscribeKey: 'sub-c-691e368e-05e7-11e8-8ec0-52bf6fff9f5d',
-		});
-
-		var bitcoinFeed = ('bitcoin-feed'+ me);
-		console.log(bitcoinFeed)
-
+		    subscribeKey: 'sub-c-691e368e-05e7-11e8-8ec0-52bf6fff9f5d' // replace with your own sub-key
+		  });
 		// EON Charts configuration
 		var pointLimit = 15;
 		var topPadding = 100;
@@ -65,7 +59,7 @@
 									 x: {type: 'timeseries',tick: {format: '%H:%M:%S'}}};
 		// Create the EON Chart for BitCoin and bind its div
 		eon.chart({
-		  channels: [bitcoinFeed],
+		  channels: ['bitcoin-feed'],
 		  history: true,
 		  flow: true,
 		  limit: pointLimit,
@@ -76,33 +70,6 @@
 		    axis: eonAxis
 		  }
 		});
-
-		var xhr = new XMLHttpRequest();
-		function processRequest(e) {
- 			if (xhr.readyState == 4 && xhr.status == 200) {
-		  	var response = JSON.parse(xhr.responseText);
-		        console.log(response);
-		        pubnub.publish({
-					    channel: bitcoinFeed,
-					    message: {
-					      eon: {
-					        'BitCoin': response.BTC.USD.toFixed(2)
-					      }
-					    }
-					  });
-		    }
-		}
-		function mainApp() {
-			xhr.open('GET', 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC&tsyms=USD', true)
-				xhr.send();
-				xhr.onreadystatechange = processRequest;
-			setInterval(function(){
-				xhr.open('GET', 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC&tsyms=USD', true)
-				xhr.send();
-				xhr.onreadystatechange = processRequest;
-			}, 10000)
-		};
-		mainApp();
 	</script>
 </body>
 </html>
